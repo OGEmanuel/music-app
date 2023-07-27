@@ -1,16 +1,32 @@
-import { useState } from 'react';
-import NowPlaying from './components/NowPlaying';
-import Search from './components/Search';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import Login from './components/Login';
+import MainApp from './components/MainApp';
+import ErrorPage from './components/Error';
+import RootLayout from './components/Root';
+
+const router = createBrowserRouter([
+  {
+    path: '',
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        element: <Login />,
+      },
+      {
+        path: 'main-app',
+        element: <MainApp />,
+      },
+    ],
+  },
+]);
 
 function App() {
-  const [page, setPage] = useState('NowPlaying');
-  const [isPlaying, setIsPlaying] = useState(false);
-
   return (
-    <>
-      {page === 'NowPlaying' && <NowPlaying setPage={setPage} isPlaying={isPlaying} setIsPlaying={setIsPlaying} />}
-      {page === 'Search' && <Search setPage={setPage} isPlaying={isPlaying} setIsPlaying={setIsPlaying} />}
-    </>
+    <div className="App">
+      <RouterProvider router={router} />
+    </div>
   );
 }
 
