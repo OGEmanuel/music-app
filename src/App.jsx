@@ -3,12 +3,13 @@ import Login from './components/Login';
 import MainApp from './components/MainApp';
 import ErrorPage from './components/Error';
 import RootLayout from './components/Root';
+import { checkAuthLoader } from '../util/routeProtection';
 
 const router = createBrowserRouter([
   {
     path: '',
     element: <RootLayout />,
-    errorElement: <ErrorPage />,
+    // errorElement: <ErrorPage />,
     children: [
       {
         index: true,
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
       {
         path: 'main-app',
         element: <MainApp />,
+        loader: checkAuthLoader,
       },
     ],
   },

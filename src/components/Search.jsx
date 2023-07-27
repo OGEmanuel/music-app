@@ -6,17 +6,25 @@ import { FaPlay } from 'react-icons/fa';
 import bg from '../assets/images/defaultBg.jpg';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { getToken } from '../../util/getToken';
 
 const URL_SEARCH = 'https://web-production-57656.up.railway.app/users/search';
 
 const Search = props => {
-  const { isPlaying, setIsPlaying, setPage, setInputValue, inputValue } = props;
-  const [data, setData] = useState([]);
+  const {
+    isPlaying,
+    setIsPlaying,
+    setPage,
+    setInputValue,
+    inputValue,
+    setData,
+    data,
+    setCurrPlay,
+    currPlay,
+  } = props;
+  const token = getToken();
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('data'));
-    const token = data.auth_token;
-
     const header = {
       headers: {
         'Content-Type': 'application/json',
@@ -32,14 +40,23 @@ const Search = props => {
     const search = async () => {
       try {
         const response = await axios.get(URL_SEARCH, header, param);
-        // const result = await response;
-        console.log(response);
+        const result = await response.data.data;
+        setData(result);
+        console.log(result);
       } catch (error) {
         console.log(error);
       }
     };
     search();
   }, []);
+
+  const onPlay = artist => {
+    const playing = data.map(data => data).find(data => data.artist === artist);
+    setCurrPlay(playing);
+    console.log(currPlay);
+    setIsPlaying(prev => !prev);
+    setPage('NowPlaying');
+  };
 
   return (
     <div>
@@ -61,22 +78,37 @@ const Search = props => {
           </div>
         </IconContext.Provider>
       </div>
-      <div className="h-[5rem] flex justify-between pr-7 bg-white rounded-md">
-        <div className="flex items-center gap-5">
-          <img src={bg} alt="Album art" className="h-full rounded-md" />
-          <p className="font-bold text-lg md:text-2xl">
-            Roar{' '}
-            <span className="block font-semibold text-base md:text-lg">
-              Dunsin Oyekan
-            </span>
-          </p>
-        </div>
-        <button
-          onClick={() => setIsPlaying(prev => !prev)}
-          className="hover:scale-110 transition-all"
-        >
-          {isPlaying ? <FaPlay /> : <FaPause />}
-        </button>
+      <div className="flex flex-col gap-4">
+        {data?.map((data, i) => (
+          <div
+            key={i}
+            className="h-[5rem] flex justify-between pr-7 bg-white rounded-md"
+          >
+            <div className="flex items-center gap-5">
+              <img
+                src={data.album_art_url}
+                alt="Album art"
+                className="h-full rounded-md"
+              />
+              <p className="font-bold text-lg md:text-2xl">
+                {data.album}{' '}
+                <span className="block font-semibold text-base md:text-lg">
+                  {data.artist}
+                </span>
+              </p>
+            </div>
+            <button
+              onClick={() => onPlay(data.artist)}
+              className="hover:scale-110 transition-all"
+            >
+              {currPlay.artist === data.artist && isPlaying ? (
+                <FaPlay />
+              ) : (
+                <FaPause />
+              )}
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -1,7 +1,8 @@
-const Video = () => {
+const Video = props => {
+  const { video } = props;
   return (
     <section>
-      <iframe src="" className="h-[432px]"></iframe>
+      <iframe src={video} className="h-[432px] w-full"></iframe>
     </section>
   );
 };

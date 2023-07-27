@@ -6,6 +6,8 @@ const MainApp = () => {
   const [page, setPage] = useState('Search');
   const [isPlaying, setIsPlaying] = useState(false);
   const [inputValue, setInputValue] = useState();
+  const [data, setData] = useState([]);
+  const [currPlay, setCurrPlay] = useState();
 
   return (
     <>
@@ -14,15 +16,20 @@ const MainApp = () => {
           setPage={setPage}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}
+          currPlay={currPlay}
         />
       )}
       {page === 'Search' && (
         <Search
           setPage={setPage}
+          data={data}
+          setData={setData}
           isPlaying={isPlaying}
           setInputValue={setInputValue}
           inputValue={inputValue}
           setIsPlaying={setIsPlaying}
+          setCurrPlay={setCurrPlay}
+          currPlay={currPlay}
         />
       )}
     </>

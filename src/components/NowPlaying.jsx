@@ -8,7 +8,7 @@ import { FaSearch } from 'react-icons/fa';
 import { FaDownload } from 'react-icons/fa';
 import { FaOutdent } from 'react-icons/fa';
 import bg from '../assets/images/defaultBg.jpg';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Lyrics from './Lyrics';
 import Video from './Video';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +16,16 @@ import { useNavigate } from 'react-router-dom';
 const NowPlaying = props => {
   const [tab, setTab] = useState('music');
   const navigate = useNavigate();
-  const { isPlaying, setIsPlaying, setPage } = props;
+  const audioRef = useRef();
+  const { isPlaying, setIsPlaying, setPage, currPlay } = props;
+
+  useEffect(() => {
+    if (isPlaying) {
+      audioRef.current.play();
+    } else {
+      audioRef.current.pause();
+    }
+  }, [isPlaying]);
 
   const logoutHandler = () => {
     localStorage.clear();
@@ -24,7 +33,7 @@ const NowPlaying = props => {
   };
 
   return (
-    <div className="flex flex-col h-full justify-between">
+    <div className="flex flex-col h-full justify-between overflow-hidden">
       <IconContext.Provider value={{ size: '1.5rem', className: 'icons' }}>
         <div className="flex items-center">
           <button onClick={logoutHandler}>
@@ -68,15 +77,17 @@ const NowPlaying = props => {
         </div>
       </IconContext.Provider>
       <p className="font-bold text-2xl">
-        Roar <span className="block font-semibold text-lg">Dunsin Oyekan</span>
+        {currPlay.album}{' '}
+        <span className="block font-semibold text-lg">{currPlay.artist}</span>
       </p>
+      <audio src={currPlay.spotify_url} ref={audioRef}></audio>
       {tab === 'music' && (
         <div className="rounded-md overflow-hidden h-[432px]">
-          <img src={bg} alt="Now Playing" />
+          <img src={currPlay.album_art_url} alt="Now Playing" />
         </div>
       )}
       {tab === 'lyrics' && <Lyrics />}
-      {tab === 'video' && <Video />}
+      {tab === 'video' && <Video video={currPlay.youtube_video_url} />}
       <div className="flex flex-col gap-2">
         <div className="flex justify-between">
           <p>0:00</p>
@@ -86,16 +97,16 @@ const NowPlaying = props => {
           <div className="w-[60%] relative rounded-md hover:shadow-md hover:border-white bg-black h-2.5 after:h-[.9rem] transition-all after:w-[.9rem] after:absolute after:rounded-full after:bg-white after:-top-[.15rem] after:-right-2"></div>
         </div>
       </div>
-      <div className="flex justify-between">
+      <div className="flex mx-auto">
         <IconContext.Provider value={{ size: '2rem', className: 'icons' }}>
-          <FaStepBackward />
+          {/* <FaStepBackward /> */}
           <button
             onClick={() => setIsPlaying(prev => !prev)}
-            className="hover:scale-110 transition-all"
+            className="hover:scale-110 transition-all w-max"
           >
             {isPlaying ? <FaPlay /> : <FaPause />}
           </button>
-          <FaStepForward />
+          {/* <FaStepForward /> */}
         </IconContext.Provider>
       </div>
     </div>
